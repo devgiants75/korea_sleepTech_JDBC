@@ -69,9 +69,14 @@ public class PostDao {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                return new Post();
+                return new Post(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        rs.getString("author"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                );
             }
-
         } catch (SQLException e) {
             System.err.println("[Error] 게시글 상세 조회 실패: " + e.getMessage());
         }
@@ -80,11 +85,31 @@ public class PostDao {
 
     public void update(Post post) {
         // post 데이터 수정: 조건에 id의 동적 파라미터에 따라 title과 content를 수정
-        String sql = "UPDATE post SET title = ?, content = ?, WHERE id = ?";
+        String sql = "UPDATE post SET title = ?, content = ? WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+            pstmt.setString(1, post.getTitle());
+            pstmt.setString(2, post.getContent());
+            pstmt.setInt(3, post.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[Error] 게시글 수정 실패: " + e.getMessage());
+        }
     }
 
     public void delete(int id) {
         // post 데이터 삭제: 조건에 id의 동적 파라미터에 따라 삭제
         String sql = "DELETE FROM post WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[Error] 게시글 삭제 실패: " + e.getMessage());
+        }
     }
 }
