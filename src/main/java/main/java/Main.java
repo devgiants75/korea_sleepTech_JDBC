@@ -16,6 +16,8 @@ package main.java;
 *   - manager: PostManager
 * */
 
+import main.java.manager.PostManager;
+
 public class Main {
     public static void main(String[] args) {
 //        MemberManager mm = new MemberManager();
@@ -26,6 +28,11 @@ public class Main {
 //            e.printStackTrace();
 //        }
 
-
+        PostManager pm = new PostManager();
+        try {
+            pm.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
